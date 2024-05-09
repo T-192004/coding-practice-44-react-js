@@ -1,11 +1,16 @@
-import Component from 'react'
+import {Component} from 'react'
 import {
   AppContainer,
   MemeInputContainer,
   Heading,
-  MemeOutputContainer,
   InputLabel,
   InputBox,
+  SelectBox,
+  OptionBox,
+  GenerateButton,
+  MemeOutputContainer,
+  MemeOutput,
+  OutputText,
 } from './styledComponents'
 
 const fontSizesOptionsList = [
@@ -40,21 +45,99 @@ const fontSizesOptionsList = [
 ]
 // Write your code here
 class MemeGenerator extends Component {
+  state = {
+    inputImageUrl: '',
+    inputTopText: '',
+    inputBottomText: '',
+    activeFontSize: fontSizesOptionsList[0].displayText,
+    showMeme: false,
+  }
+
+  updateImageUrl = event => {
+    this.setState({inputImageUrl: event.target.value})
+  }
+
+  updateTopText = event => {
+    this.setState({inputTopText: event.target.value})
+  }
+
+  updateBottomText = event => {
+    this.setState({inputBottomText: event.target.value})
+  }
+
+  updateFontSize = event => {
+    this.setState({activeFontSize: event.target.value})
+  }
+
+  onGenerateMeme = event => {
+    event.preventDefault()
+    this.setState({showMeme: true})
+  }
+
   render() {
-    console.log('EME')
+    const {
+      inputImageUrl,
+      inputTopText,
+      inputBottomText,
+      activeFontSize,
+      showMeme,
+    } = this.state
+    console.log(activeFontSize)
     return (
       <AppContainer>
-        <MemeInputContainer>
+        <MemeInputContainer onSubmit={this.onGenerateMeme}>
           <Heading>Meme Generator</Heading>
-          <InputLabel>Image URL</InputLabel>
-          <InputBox type="text" placeholder="Enter the Image URL" />
-          <InputLabel>Top Text</InputLabel>
-          <InputBox type="text" placeholder="Enter the top text" />
-          <InputLabel>Bottom Text</InputLabel>
-          <InputBox type="text" placeholder="Enter the bottom text" />
+          <InputLabel htmlFor="image">Image URL</InputLabel>
+          <InputBox
+            type="text"
+            id="image"
+            value={inputImageUrl}
+            onChange={this.updateImageUrl}
+            placeholder="Enter the Image URL"
+          />
+          <InputLabel htmlFor="topText">Top Text</InputLabel>
+          <InputBox
+            type="text"
+            id="topText"
+            value={inputTopText}
+            onChange={this.updateTopText}
+            placeholder="Enter the top text"
+          />
+          <InputLabel htmlFor="bottomText">Bottom Text</InputLabel>
+          <InputBox
+            type="text"
+            id="bottomText"
+            value={inputBottomText}
+            onChange={this.updateBottomText}
+            placeholder="Enter the bottom text"
+          />
+          <InputLabel htmlFor="fontSize">Font Size</InputLabel>
+          <SelectBox
+            value={activeFontSize}
+            id="fontSize"
+            onChange={this.updateFontSize}
+          >
+            {fontSizesOptionsList.map(eachSize => (
+              <OptionBox key={eachSize.optionId} value={eachSize.displayText}>
+                {eachSize.displayText}
+              </OptionBox>
+            ))}
+          </SelectBox>
+          <GenerateButton type="submit">Generate</GenerateButton>
         </MemeInputContainer>
+        <MemeOutputContainer>
+          {showMeme && (
+            <MemeOutput bgImage={inputImageUrl} data-testid="meme">
+              <OutputText fontSize={activeFontSize}>{inputTopText}</OutputText>
+              <OutputText fontSize={activeFontSize}>
+                {inputBottomText}
+              </OutputText>
+            </MemeOutput>
+          )}
+        </MemeOutputContainer>
       </AppContainer>
     )
   }
 }
+
 export default MemeGenerator
